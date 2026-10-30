@@ -137,3 +137,13 @@ it('freezeAtom handles typed arrays', () => {
   expect(Object.isFrozen(value)).toBe(true)
   expect(value.bytes[0]).toBe(1)
 })
+
+it('freezeAtom handles typed arrays on the write path', () => {
+  const store = createStore()
+  const objAtom = freezeAtom(atom({ bytes: new Uint8Array([1]) }))
+  const next = { bytes: new Uint8Array([1, 2]) }
+  expect(() => store.set(objAtom, next)).not.toThrow()
+  const value = store.get(objAtom)
+  expect(value.bytes).toBe(next.bytes)
+  expect(Object.isFrozen(value)).toBe(true)
+})
